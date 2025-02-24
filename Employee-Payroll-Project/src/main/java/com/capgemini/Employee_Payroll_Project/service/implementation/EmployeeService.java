@@ -6,9 +6,12 @@ import com.capgemini.Employee_Payroll_Project.entity.EmployeeEntity;
 import com.capgemini.Employee_Payroll_Project.repository.EmployeeRepository;
 import com.capgemini.Employee_Payroll_Project.service.IEmployeeService;
 import jakarta.persistence.Entity;
+import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.XSlf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class EmployeeService implements IEmployeeService {
 
