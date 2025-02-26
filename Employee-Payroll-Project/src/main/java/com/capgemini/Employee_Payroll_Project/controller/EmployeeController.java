@@ -31,11 +31,13 @@ public class EmployeeController {
 
     @PostMapping("/save")
     public ResponseEntity<EmployeeDto> saveEmployee(@RequestBody EmployeeEntity employeeEntity){
+        log.info("Save the employee in database");
         return new ResponseEntity<>(employeeService.addEmployee(employeeEntity),HttpStatus.OK);
     }
 
     @PutMapping("/update")
     public ResponseEntity<EmployeeDto> updateEmployee(@RequestBody EmployeeEntity employeeEntity){
+        log.debug("update the employee details");
         return new ResponseEntity<>(employeeService.patchEmployee(employeeEntity),HttpStatus.OK);
     }
 

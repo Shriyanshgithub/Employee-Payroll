@@ -12,10 +12,12 @@ import lombok.extern.slf4j.XSlf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 
 @Service
+@Profile("dev")
 public class EmployeeService implements IEmployeeService {
 
     private static final Logger log = LoggerFactory.getLogger(EmployeeService.class);
@@ -25,6 +27,7 @@ public class EmployeeService implements IEmployeeService {
 
     @Autowired
     public EmployeeService(EmployeeRepository employeeRepository){
+        log.trace("Bean Initialized");
         this.employeeRepository = employeeRepository;
     }
 
@@ -37,6 +40,11 @@ public class EmployeeService implements IEmployeeService {
 
     @Override
     public EmployeeDto getEmployee(Long id) {
+        if(id < 1){
+            log.warn("the id : {} is invalid",id);
+            throw new IllegalArgumentException("Invalid id");
+        }
+
         log.info("Get employee from database");
         EmployeeEntity employee = employeeRepository.findById(id).orElseThrow();
         return EmployeeDtoMapper.mapToEmployeeDto(employee);
@@ -44,6 +52,10 @@ public class EmployeeService implements IEmployeeService {
 
     @Override
     public EmployeeDto patchEmployee(EmployeeEntity employeeEntity) {
+        if(employeeEntity == null){
+            log.warn("Employee not found");
+        }
+
         log.info("update the employee details in database");
         EmployeeEntity employee = employeeRepository.save(employeeEntity);
         return EmployeeDtoMapper.mapToEmployeeDto(employee);
@@ -51,7 +63,12 @@ public class EmployeeService implements IEmployeeService {
 
     @Override
     public boolean deleteEmployee(Long id) {
-        log.info("Delete the employee from database");
+        if(id < 1){
+            log.info("the id : {} is invalid",id);
+            throw new IllegalArgumentException("Invalid id");
+        }
+
+        log.info("Delete the employee from database by id : {}",id);
         employeeRepository.deleteById(id);
         return true;
     }
