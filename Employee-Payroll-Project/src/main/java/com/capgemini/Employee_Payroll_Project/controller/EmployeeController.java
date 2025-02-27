@@ -3,12 +3,15 @@ package com.capgemini.Employee_Payroll_Project.controller;
 import com.capgemini.Employee_Payroll_Project.dto.EmployeeDto;
 import com.capgemini.Employee_Payroll_Project.entity.EmployeeEntity;
 import com.capgemini.Employee_Payroll_Project.service.implementation.EmployeeService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,13 +33,27 @@ public class EmployeeController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<EmployeeDto> saveEmployee(@RequestBody EmployeeEntity employeeEntity){
+    public ResponseEntity<EmployeeDto> saveEmployee(@RequestBody @Valid EmployeeEntity employeeEntity,
+                                                    BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            for(ObjectError error : bindingResult.getAllErrors()){
+                log.error(error.getDefaultMessage());
+            }
+            throw new IllegalArgumentException("Validation failed!");
+        }
         log.info("Save the employee in database");
         return new ResponseEntity<>(employeeService.addEmployee(employeeEntity),HttpStatus.OK);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<EmployeeDto> updateEmployee(@RequestBody EmployeeEntity employeeEntity){
+    public ResponseEntity<EmployeeDto> updateEmployee(@RequestBody @Valid EmployeeEntity employeeEntity,BindingResult bindingResult){
+        if(bindingResult.hasErrors()) {
+            for (ObjectError error : bindingResult.getAllErrors()) {
+                log.error(error.getDefaultMessage());
+            }
+            throw new IllegalArgumentException("validation failed");
+        }
+        
         log.debug("update the employee details");
         return new ResponseEntity<>(employeeService.patchEmployee(employeeEntity),HttpStatus.OK);
     }

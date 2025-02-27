@@ -4,6 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Entity
@@ -14,7 +15,14 @@ public class EmployeeEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotEmpty
+    @Pattern(regexp = "^[A-Za-z\\s]+$", message = "name contains only letters and spaces")
     private String name;
+
+
+    @Pattern(regexp = "[1-9]{4}+",message = "salary must be of 4 digit")
+    @Min(value = 10_000 , message = "minimum salary")
+    @Max(value = 1_00_000, message = "maximum salary")
     private double salary;
 
     public Long getId() {
