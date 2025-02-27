@@ -6,6 +6,7 @@ import com.capgemini.Employee_Payroll_Project.dto.EmployeeDtoMapper;
 import com.capgemini.Employee_Payroll_Project.entity.EmployeeEntity;
 import com.capgemini.Employee_Payroll_Project.exception.EmpAlreadyExistsException;
 import com.capgemini.Employee_Payroll_Project.exception.EmployeeNotFoundException;
+import com.capgemini.Employee_Payroll_Project.exception.InvalidParameterException;
 import com.capgemini.Employee_Payroll_Project.repository.EmployeeRepository;
 import com.capgemini.Employee_Payroll_Project.service.IEmployeeService;
 import jakarta.persistence.Entity;
@@ -79,7 +80,7 @@ public class EmployeeService implements IEmployeeService {
     public boolean deleteEmployee(Long id) {
         if(id < 1){
             log.info("the id : {} is invalid",id);
-            throw new IllegalArgumentException("Invalid id");
+            throw new InvalidParameterException("Invalid id");
         }
 
         log.info("Delete the employee from database by id : {}",id);
