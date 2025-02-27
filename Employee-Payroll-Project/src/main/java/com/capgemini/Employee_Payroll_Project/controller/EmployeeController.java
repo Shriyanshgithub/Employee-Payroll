@@ -2,6 +2,7 @@ package com.capgemini.Employee_Payroll_Project.controller;
 
 import com.capgemini.Employee_Payroll_Project.dto.EmployeeDto;
 import com.capgemini.Employee_Payroll_Project.entity.EmployeeEntity;
+import com.capgemini.Employee_Payroll_Project.exception.EmpAlreadyExistsException;
 import com.capgemini.Employee_Payroll_Project.service.implementation.EmployeeService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.InvalidParameterException;
 
 @RestController
 public class EmployeeController {
@@ -39,7 +42,7 @@ public class EmployeeController {
             for(ObjectError error : bindingResult.getAllErrors()){
                 log.error(error.getDefaultMessage());
             }
-            throw new IllegalArgumentException("Validation failed!");
+            throw new EmpAlreadyExistsException("Validation failed!");
         }
         log.info("Save the employee in database");
         return new ResponseEntity<>(employeeService.addEmployee(employeeEntity),HttpStatus.OK);
@@ -51,7 +54,7 @@ public class EmployeeController {
             for (ObjectError error : bindingResult.getAllErrors()) {
                 log.error(error.getDefaultMessage());
             }
-            throw new IllegalArgumentException("validation failed");
+            throw new InvalidParameterException("validation failed");
         }
         
         log.debug("update the employee details");

@@ -4,6 +4,8 @@ import com.capgemini.Employee_Payroll_Project.EmployeePayrollProjectApplication;
 import com.capgemini.Employee_Payroll_Project.dto.EmployeeDto;
 import com.capgemini.Employee_Payroll_Project.dto.EmployeeDtoMapper;
 import com.capgemini.Employee_Payroll_Project.entity.EmployeeEntity;
+import com.capgemini.Employee_Payroll_Project.exception.EmpAlreadyExistsException;
+import com.capgemini.Employee_Payroll_Project.exception.EmployeeNotFoundException;
 import com.capgemini.Employee_Payroll_Project.repository.EmployeeRepository;
 import com.capgemini.Employee_Payroll_Project.service.IEmployeeService;
 import jakarta.persistence.Entity;
@@ -22,21 +24,29 @@ public class EmployeeService implements IEmployeeService {
 
     private static final Logger log = LoggerFactory.getLogger(EmployeeService.class);
 
-    @Autowired
+
     EmployeeRepository employeeRepository;
 
+    //dependency injection by constructor
     @Autowired
     public EmployeeService(EmployeeRepository employeeRepository){
         log.trace("Bean Initialized");
         this.employeeRepository = employeeRepository;
     }
 
+    //save the employee details in database
+
     @Override
     public EmployeeDto addEmployee(EmployeeEntity employeeEntity) {
         log.info("Add employee in database");
-        EmployeeEntity employee = employeeRepository.save(employeeEntity);
+        if(employeeRepository.findById(employeeEntity.getId()).isPresent()){
+            throw new EmpAlreadyExistsException();
+        }
+         employeeRepository.save(employeeEntity);
         return EmployeeDtoMapper.mapToEmployeeDto(employeeEntity);
     }
+
+    //Get the employee from the database
 
     @Override
     public EmployeeDto getEmployee(Long id) {
@@ -46,9 +56,11 @@ public class EmployeeService implements IEmployeeService {
         }
 
         log.info("Get employee from database");
-        EmployeeEntity employee = employeeRepository.findById(id).orElseThrow();
+        EmployeeEntity employee = employeeRepository.findById(id).orElseThrow(() -> new EmployeeNotFoundException("Employee not found with id : " + id));
         return EmployeeDtoMapper.mapToEmployeeDto(employee);
     }
+
+    //update the existing employee details
 
     @Override
     public EmployeeDto patchEmployee(EmployeeEntity employeeEntity) {
@@ -60,6 +72,8 @@ public class EmployeeService implements IEmployeeService {
         EmployeeEntity employee = employeeRepository.save(employeeEntity);
         return EmployeeDtoMapper.mapToEmployeeDto(employee);
     }
+
+    //Delete the employee by id
 
     @Override
     public boolean deleteEmployee(Long id) {
